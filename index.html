@@ -1,0 +1,57 @@
+<!-- Calculadora de indemnización completa -->
+<style>
+#calculadora {
+  background: #fdf7f0;
+  padding: 20px;
+  border: 2px solid #1e3a5f;
+  max-width: 500px;
+  font-family: Arial, sans-serif;
+  color: #1e3a5f;
+  border-radius: 10px;
+}
+#calculadora h3 {
+  color: #bfa046;
+  margin-bottom: 20px;
+}
+#calculadora input, #calculadora button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+#calculadora button {
+  background-color: #bfa046;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#calculadora button:hover {
+  background-color: #a6893d;
+}
+#resultado {
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 15px;
+  color: #000;
+}
+</style>
+<div id="calculadora">
+  <h3>Calculadora de Indemnización por Despido</h3>
+  <label>Fecha de ingreso: <input type="date" id="fechaIngreso" /></label><br />
+  <label>Fecha de despido: <input type="date" id="fechaDespido" /></label><br />
+  <label>Mejor Remuneración Mensual, Normal y Habitual: <input type="number" id="sueldo" value="100000" step="0.01" /></label><br />
+  <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaArt1" style="margin-right: 10px;" />Indemnización Art. 1 Ley 25.323</label>
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaArt2" style="margin-right: 10px;" />Indemnización Art. 2 Ley 25.323</label>
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaArt80" style="margin-right: 10px;" />Indemnización Art. 80 LCT</label>
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaEmbarazo" style="margin-right: 10px;" />Indemnización por embarazo</label>
+  </div>
+  <button onclick="calcularIndemnizacion()">Calcular</button>
+  <div id="resultado" style="margin-top:20px;font-weight:bold;"></div>
+</div>
