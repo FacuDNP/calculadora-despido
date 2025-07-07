@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora de Indemnización por Despido</title>
+  <style>
+    #calculadora {
+      background: #fdf7f0;
+      padding: 20px;
+      border: 2px solid #1e3a5f;
+      max-width: 500px;
+      font-family: Arial, sans-serif;
+      color: #1e3a5f;
+      border-radius: 10px;
+    }
+    #calculadora h3 {
+      color: #bfa046;
+      margin-bottom: 20px;
+    }
+    #calculadora input, #calculadora button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    #calculadora button {
+      background-color: #bfa046;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #calculadora button:hover {
+      background-color: #a6893d;
+    }
+    #resultado {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 15px;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+<div id="calculadora">
+  <h3>Calculadora de Indemnización por Despido</h3>
+  <label>Fecha de ingreso: <input type="date" id="fechaIngreso" /></label><br />
+  <label>Fecha de despido: <input type="date" id="fechaDespido" /></label><br />
+  <label>Mejor Remuneración Mensual, Normal y Habitual: <input type="number" id="sueldo" value="100000" step="0.01" /></label><br />
+  <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaArt1" style="margin-right: 10px;" />Indemnización Art. 1 Ley 25.323</label>
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaArt2" style="margin-right: 10px;" />Indemnización Art. 2 Ley 25.323</label>
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaArt80" style="margin-right: 10px;" />Indemnización Art. 80 LCT</label>
+    <label style="display: flex; align-items: center; flex-wrap: wrap; width: 100%;"><input type="checkbox" id="multaEmbarazo" style="margin-right: 10px;" />Indemnización por embarazo</label>
+  </div>
+  <button onclick="calcularIndemnizacion()">Calcular</button>
+  <div id="resultado" style="margin-top:20px;font-weight:bold;"></div>
+</div>
+<script>
+function calcularIndemnizacion() {
+  const fechaIngreso = new Date(document.getElementById('fechaIngreso').value);
+  const fechaDespido = new Date(document.getElementById('fechaDespido').value);
+  const sueldo = parseFloat(document.getElementById('sueldo').value);
+  const aplicaArt1 = document.getElementById('multaArt1').checked;
+  const aplicaArt2 = document.getElementById('multaArt2').checked;
+  const aplicaArt80 = document.getElementById('multaArt80').checked;
+  const aplicaEmbarazo = document.getElementById('multaEmbarazo').checked;
+
+  if (isNaN(fechaIngreso) || isNaN(fechaDespido) || isNaN(sueldo)) {
+    alert('Completá todos los campos correctamente.');
+    return;
+  }
+
+  function redondear(valor) {
+    return Math.round(valor);
+  }
+
+  function formatoMoneda(valor) {
+    return valor.toLocaleString('es-AR') + '.-';
+  }
+
+  function calcularAntiguedad(ingreso, egreso) {
+    let anios = egreso.getFullYear() - ingreso.getFullYear();
+    let meses = egreso.getMonth() - ingreso.getMonth();
+    let dias = egreso.getDate() - ingreso.getDate();
+    if (meses < 0 || (meses === 0 && dias < 0)) anios--;
+    return anios;
+  }
+
+  const diasTotales = Math.floor((fechaDespido - fechaIngreso) / (1000 * 60 * 60 * 24));
+  const antigAnios = diasTotales / 365;
+  const antigCalc = calcularAntiguedad(fechaIngreso, fechaDespido);
+  const sueldoDiario25 = sueldo / 25;
+  const sueldoDiario295 = sueldo / 29.5;
+
+  let art245 = redondear(antigCalc * sueldo);
+  if (art245 === 0) art245 = sueldo;
+
+  const preaviso = redondear(antigAnios < 5 ? sueldo : sueldo * 2);
+  const sacPreaviso = redondear(preaviso / 12);
+
+  const diasDelMes = new Date(fechaDespido.getFullYear(), fechaDespido.getMonth() + 1, 0).getDate();
+  const diasTrabajados = fechaDespido.getDate();
+  const diasTrabajadosMes = redondear(sueldoDiario295 * diasTrabajados);
+
+  const integracionMesDespido = redondear(sueldoDiario295 * (diasDelMes - diasTrabajados));
+  const sacIntegracion = redondear(integracionMesDespido / 12);
+  const sacProporcional = redondear((sueldo / 2) / 6);
+
+  let diasVacProp = 0;
+  if (antigAnios >= 0.5) {
+    if (antigAnios < 5) diasVacProp = 14;
+    else if (antigAnios < 10) diasVacProp = 21;
+    else if (antigAnios < 20) diasVacProp = 28;
+    else diasVacProp = 35;
+    diasVacProp = diasVacProp * ((fechaDespido.getMonth() + 1) / 12);
+  } else {
+    diasVacProp = diasTotales / 20;
+  }
+
+  const vacacionesNoGozadas = redondear((antigAnios >= 0.5 ? sueldoDiario25 * diasVacProp : 0));
+  const vacacionesProporcionales = redondear(sueldoDiario25 * diasVacProp);
+  const sacVacaciones = redondear(vacacionesNoGozadas / 12);
+  const sacVacacionesProporcionales = redondear(vacacionesProporcionales / 12);
+
+  const multa1 = aplicaArt1 ? redondear(art245 * 0.5) : 0;
+  const multa2 = aplicaArt2 ? redondear(art245) : 0;
+  const multa80 = aplicaArt80 ? redondear(sueldo * 3) : 0;
+  const indemnizacionEmbarazo = aplicaEmbarazo ? redondear(sueldo * 13) : 0;
+
+  const totalFinal = redondear(
+    art245 + preaviso + sacPreaviso + diasTrabajadosMes +
+    integracionMesDespido + sacIntegracion + sacProporcional +
+    vacacionesNoGozadas + sacVacaciones +
+    vacacionesProporcionales + sacVacacionesProporcionales +
+    multa1 + multa2 + multa80 + indemnizacionEmbarazo
+  );
+
+  let resultadoHTML = '';
+  resultadoHTML += `Días trabajados en el mes: $ ${formatoMoneda(diasTrabajadosMes)}<br>`;
+  resultadoHTML += `SAC proporcional: $ ${formatoMoneda(sacProporcional)}<br>`;
+  resultadoHTML += `Vacaciones proporcional: $ ${formatoMoneda(vacacionesProporcionales)}<br>`;
+  resultadoHTML += `Vacaciones no gozadas: $ ${formatoMoneda(vacacionesNoGozadas)}<br>`;
+  resultadoHTML += `SAC vacaciones proporcionales: $ ${formatoMoneda(sacVacacionesProporcionales)}<br>`;
+  resultadoHTML += `Indemnización por falta de preaviso: $ ${formatoMoneda(preaviso)}<br>`;
+  resultadoHTML += `SAC preaviso: $ ${formatoMoneda(sacPreaviso)}<br>`;
+  resultadoHTML += `Indemnización integración mes despido: $ ${formatoMoneda(integracionMesDespido)}<br>`;
+  resultadoHTML += `SAC integración mes despido: $ ${formatoMoneda(sacIntegracion)}<br>`;
+  resultadoHTML += `Indemnización por antigüedad: $ ${formatoMoneda(art245)}<br>`;
+  resultadoHTML += `Indemnización art. 1 ley 25.323: $ ${formatoMoneda(multa1)}<br>`;
+  resultadoHTML += `Indemnización art. 2 ley 25.323: $ ${formatoMoneda(multa2)}<br>`;
+  resultadoHTML += `Indemnización art. 80 lct: $ ${formatoMoneda(multa80)}<br>`;
+  resultadoHTML += `Indemnización por embarazo: $ ${formatoMoneda(indemnizacionEmbarazo)}<br>`;
+  resultadoHTML += `<br><strong>Total planilla: $ ${formatoMoneda(totalFinal)}</strong>`;
+
+  document.getElementById('resultado').innerHTML = resultadoHTML;
+}
+</script>
+</body>
+</html>
