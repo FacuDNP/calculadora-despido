@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Calculadora de Indemnización por Despido</title>
+  <title>Calculadora de IndemnizaciÃ³n por Despido</title>
   <style>
     #calculadora {
       background: #fdf7f0;
@@ -45,23 +45,112 @@
       color: #000;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
 <div id="calculadora">
-  <h3>Calculadora de Indemnización por Despido</h3>
+  <h3>Calculadora de IndemnizaciÃ³n por Despido</h3>
   <label>Fecha de ingreso: <input type="date" id="fechaIngreso" /></label><br />
   <label>Fecha de despido: <input type="date" id="fechaDespido" /></label><br />
-  <label>Mejor Remuneración Mensual, Normal y Habitual: <input type="number" id="sueldo" value="100000" step="0.01" /></label><br />
+  <label>Mejor RemuneraciÃ³n Mensual, Normal y Habitual: <input type="number" id="sueldo" value="100000" step="0.01" /></label><br />
   <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
-    <label><input type="checkbox" id="multaArt1" /> Indemnización Art. 1 Ley 25.323</label>
-    <label><input type="checkbox" id="multaArt2" /> Indemnización Art. 2 Ley 25.323</label>
-    <label><input type="checkbox" id="multaArt80" /> Indemnización Art. 80 LCT</label>
-    <label><input type="checkbox" id="multaEmbarazo" /> Indemnización por embarazo</label>
+    <label><input type="checkbox" id="multaArt1" /> IndemnizaciÃ³n Art. 1 Ley 25.323</label>
+    <label><input type="checkbox" id="multaArt2" /> IndemnizaciÃ³n Art. 2 Ley 25.323</label>
+    <label><input type="checkbox" id="multaArt80" /> IndemnizaciÃ³n Art. 80 LCT</label>
+    <label><input type="checkbox" id="multaEmbarazo" /> IndemnizaciÃ³n por embarazo</label>
   </div>
   <button onclick="calcularIndemnizacion()">Calcular</button>
   <div id="resultado"></div>
+  <button onclick="exportarPDF()">Exportar a PDF</button>
 </div>
+
+<script>
+// (Tu funciÃ³n calcularIndemnizacion original intacta estÃ¡ acÃ¡ y no fue modificada)
+
+// Esta es la nueva funciÃ³n agregada
+function exportarPDF() {
+  const cliente = prompt("IngresÃ¡ el nombre del cliente:");
+  if (!cliente) return;
+
+  const sueldo = document.getElementById("sueldo").value;
+  const ingreso = document.getElementById("fechaIngreso").value;
+  const despido = document.getElementById("fechaDespido").value;
+  const resultado = document.getElementById("resultado").innerHTML;
+
+  const contenido = `
+    <div style="font-family: Arial, sans-serif;">
+      <h1 style="color:#000;">DORADO & ASOC. ABOGADOS</h1>
+      <h2 style="color:#bfa046;">EstimaciÃ³n indemnizatoria</h2>
+      <p><strong>Cliente:</strong> ${cliente}<br>
+      <strong>Sueldo:</strong> $${sueldo}<br>
+      <strong>Fecha de ingreso:</strong> ${ingreso}<br>
+      <strong>Fecha de despido:</strong> ${despido}</p>
+      ${resultado}
+      <p style="margin-top:20px; font-style:italic;">
+        Este cÃ¡lculo es estimativo. Para un asesoramiento legal personalizado, contactanos en:
+      </p>
+      <p style="text-align:left;">
+        Web: www.doradoabogados.com<br>
+        Email: contacto@doradoabogados.com<br>
+        TelÃ©fono: 3875525222<br>
+        DirecciÃ³n: Av. Belgrano NÂ° 474, Piso 2. Salta capital
+      </p>
+    </div>
+  `;
+
+  const element = document.createElement("div");
+  element.innerHTML = contenido;
+
+  html2pdf().set({
+    margin: 10,
+    filename: `indemnizacion_${cliente.replace(/ /g, "_").toLowerCase()}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(element).save();
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+<script>
+  function exportarPDF() {
+    const cliente = prompt("Ingrese el nombre del cliente:");
+    if (!cliente) return;
+
+    const sueldo = document.getElementById("sueldo").value;
+    const fechaIngreso = document.getElementById("fechaIngreso").value;
+    const fechaDespido = document.getElementById("fechaDespido").value;
+    const resultadoHTML = document.getElementById("resultado").innerHTML;
+
+    const element = document.createElement("div");
+    element.style.fontFamily = "Arial, sans-serif";
+    element.style.color = "#000";
+    element.style.padding = "20px";
+    element.innerHTML = `
+      <h2 style="margin-bottom: 0;">DORADO & ASOC. ABOGADOS</h2>
+      <h3 style="color: #bfa046; margin-top: 5px;">EstimaciÃ³n indemnizatoria</h3>
+      <p><strong>Cliente:</strong> ${cliente}<br>
+         <strong>Sueldo:</strong> $${sueldo}<br>
+         <strong>Fecha de ingreso:</strong> ${fechaIngreso}<br>
+         <strong>Fecha de despido:</strong> ${fechaDespido}</p>
+      ${resultadoHTML}
+      <p style="font-style: italic; margin-top: 20px;">
+        Este cÃ¡lculo es estimativo. Para un asesoramiento legal personalizado, contactanos en:
+      </p>
+      <p style="text-align: left; line-height: 1.5; font-size: 14px;">
+        Web: www.doradoabogados.com<br>
+        Email: contacto@doradoabogados.com<br>
+        TelÃ©fono: 3875525222<br>
+        DirecciÃ³n: Av. Belgrano NÂ° 474, Piso 2. Salta capital
+      </p>
+    `;
+
+    html2pdf().from(element).save("estimacion_indemnizatoria.pdf");
+  }
+</script>
+
+
 
 <script>
 function calcularAntiguedadConFraccion(ingreso, egreso) {
@@ -88,7 +177,7 @@ function calcularIndemnizacion() {
   const fechaDespido = new Date(document.getElementById('fechaDespido').value + 'T00:00:00');
   const sueldo = parseFloat(document.getElementById('sueldo').value);
   if (!fechaIngreso || !fechaDespido || isNaN(sueldo)) {
-    alert('Completá todos los campos correctamente.');
+    alert('CompletÃ¡ todos los campos correctamente.');
     return;
   }
   if (fechaDespido <= fechaIngreso) {
@@ -185,26 +274,25 @@ function calcularIndemnizacion() {
   );
 
   let resultadoHTML = '';
-  resultadoHTML += `I.- Días trabajados en el mes: ${formatoMoneda(diasTrabajadosMes)}<br>`;
+  resultadoHTML += `I.- DÃ­as trabajados en el mes: ${formatoMoneda(diasTrabajadosMes)}<br>`;
   resultadoHTML += `II.- SAC proporcional: ${formatoMoneda(sacProporcional)}<br>`;
   resultadoHTML += `III.- Vacaciones proporcional: ${formatoMoneda(vacacionesProporcionales)}<br>`;
   resultadoHTML += `IV.- Vacaciones no gozadas: ${formatoMoneda(vacacionesNoGozadas)}<br>`;
   resultadoHTML += `V.- SAC vacaciones proporcionales: ${formatoMoneda(sacVacacionesProporcionales)}<br>`;
-  resultadoHTML += `VI.- Indemnización por falta de preaviso: ${formatoMoneda(preaviso)}<br>`;
+  resultadoHTML += `VI.- IndemnizaciÃ³n por falta de preaviso: ${formatoMoneda(preaviso)}<br>`;
   resultadoHTML += `VII.- SAC preaviso: ${formatoMoneda(sacPreaviso)}<br>`;
-  resultadoHTML += `VIII.- Indemnización integración mes despido: ${formatoMoneda(integracionMesDespido)}<br>`;
-  resultadoHTML += `IX.- SAC integración mes despido: ${formatoMoneda(sacIntegracion)}<br>`;
-  resultadoHTML += `X.- Indemnización por antigüedad: ${formatoMoneda(art245)}<br>`;
-  resultadoHTML += `XI.- Indemnización por falta de registración: ${formatoMoneda(multa1)}<br>`;
-  resultadoHTML += `XII.- Indemnización por falta de pago de indemnizaciones: ${formatoMoneda(multa2)}<br>`;
-  resultadoHTML += `XIII.- Indemnización por falta de entrega de certificados art. 80: ${formatoMoneda(multa80)}<br>`;
-  resultadoHTML += `XIV.- Indemnización por embarazo: ${formatoMoneda(indemnizacionEmbarazo)}<br>`;
+  resultadoHTML += `VIII.- IndemnizaciÃ³n integraciÃ³n mes despido: ${formatoMoneda(integracionMesDespido)}<br>`;
+  resultadoHTML += `IX.- SAC integraciÃ³n mes despido: ${formatoMoneda(sacIntegracion)}<br>`;
+  resultadoHTML += `X.- IndemnizaciÃ³n por antigÃ¼edad: ${formatoMoneda(art245)}<br>`;
+  resultadoHTML += `XI.- IndemnizaciÃ³n por falta de registraciÃ³n: ${formatoMoneda(multa1)}<br>`;
+  resultadoHTML += `XII.- IndemnizaciÃ³n por falta de pago de indemnizaciones: ${formatoMoneda(multa2)}<br>`;
+  resultadoHTML += `XIII.- IndemnizaciÃ³n por falta de entrega de certificados art. 80: ${formatoMoneda(multa80)}<br>`;
+  resultadoHTML += `XIV.- IndemnizaciÃ³n por embarazo: ${formatoMoneda(indemnizacionEmbarazo)}<br>`;
   resultadoHTML += `<br><strong>Total planilla: ${formatoMoneda(totalFinal)}</strong>`;
 
   document.getElementById('resultado').innerHTML = resultadoHTML;
 }
 </script>
-</body>
-</html>
 
+</body>
 </html>
