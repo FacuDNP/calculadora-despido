@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora de Indemnización por Despido</title>
+  <style>
+    #calculadora {
+      background: #fdf7f0;
+      padding: 20px;
+      border: 2px solid #1e3a5f;
+      max-width: 500px;
+      font-family: Arial, sans-serif;
+      color: #1e3a5f;
+      border-radius: 10px;
+    }
+    #calculadora h3 {
+      color: #bfa046;
+      margin-bottom: 20px;
+    }
+    #calculadora input, #calculadora button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    #calculadora button {
+      background-color: #bfa046;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #calculadora button:hover {
+      background-color: #a6893d;
+    }
+    #resultado {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 15px;
+      color: #000;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div id="calculadora">
+  <h3>Calculadora de Indemnización por Despido</h3>
+  <label>Fecha de ingreso: <input type="date" id="fechaIngreso" /></label><br />
+  <label>Fecha de despido: <input type="date" id="fechaDespido" /></label><br />
+  <label>Mejor Remuneración Mensual, Normal y Habitual: <input type="number" id="sueldo" value="100000" step="0.01" /></label><br />
+  <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+    <label><input type="checkbox" id="multaArt1" /> Indemnización Art. 1 Ley 25.323</label>
+    <label><input type="checkbox" id="multaArt2" /> Indemnización Art. 2 Ley 25.323</label>
+    <label><input type="checkbox" id="multaArt80" /> Indemnización Art. 80 LCT</label>
+    <label><input type="checkbox" id="multaEmbarazo" /> Indemnización por embarazo</label>
+  </div>
+  <button onclick="calcularIndemnizacion()">Calcular</button>
+  <div id="resultado"></div>
+  <button onclick="exportarPDF()">Exportar a PDF</button>
+</div>
+
+<script>
+// (Tu función calcularIndemnizacion original intacta está acá y no fue modificada)
+
+// Esta es la nueva función agregada
+function exportarPDF() {
+  const cliente = prompt("Ingresá el nombre del cliente:");
+  if (!cliente) return;
+
+  const sueldo = document.getElementById("sueldo").value;
+  const ingreso = document.getElementById("fechaIngreso").value;
+  const despido = document.getElementById("fechaDespido").value;
+  const resultado = document.getElementById("resultado").innerHTML;
+
+  const contenido = `
+    <div style="font-family: Arial, sans-serif;">
+      <h1 style="color:#000;">DORADO & ASOC. ABOGADOS</h1>
+      <h2 style="color:#bfa046;">Estimación indemnizatoria</h2>
+      <p><strong>Cliente:</strong> ${cliente}<br>
+      <strong>Sueldo:</strong> $${sueldo}<br>
+      <strong>Fecha de ingreso:</strong> ${ingreso}<br>
+      <strong>Fecha de despido:</strong> ${despido}</p>
+      ${resultado}
+      <p style="margin-top:20px; font-style:italic;">
+        Este cálculo es estimativo. Para un asesoramiento legal personalizado, contactanos en:
+      </p>
+      <p style="text-align:left;">
+        Web: www.doradoabogados.com<br>
+        Email: contacto@doradoabogados.com<br>
+        Teléfono: 3875525222<br>
+        Dirección: Av. Belgrano N° 474, Piso 2. Salta capital
+      </p>
+    </div>
+  `;
+
+  const element = document.createElement("div");
+  element.innerHTML = contenido;
+
+  html2pdf().set({
+    margin: 10,
+    filename: `indemnizacion_${cliente.replace(/ /g, "_").toLowerCase()}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(element).save();
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+<script>
+  function exportarPDF() {
+    const cliente = prompt("Ingrese el nombre del cliente:");
+    if (!cliente) return;
+
+    const sueldo = document.getElementById("sueldo").value;
+    const fechaIngreso = document.getElementById("fechaIngreso").value;
+    const fechaDespido = document.getElementById("fechaDespido").value;
+    const resultadoHTML = document.getElementById("resultado").innerHTML;
+
+    const element = document.createElement("div");
+    element.style.fontFamily = "Arial, sans-serif";
+    element.style.color = "#000";
+    element.style.padding = "20px";
+    element.innerHTML = `
+      <h2 style="margin-bottom: 0;">DORADO & ASOC. ABOGADOS</h2>
+      <h3 style="color: #bfa046; margin-top: 5px;">Estimación indemnizatoria</h3>
+      <p><strong>Cliente:</strong> ${cliente}<br>
+         <strong>Sueldo:</strong> $${sueldo}<br>
+         <strong>Fecha de ingreso:</strong> ${fechaIngreso}<br>
+         <strong>Fecha de despido:</strong> ${fechaDespido}</p>
+      ${resultadoHTML}
+      <p style="font-style: italic; margin-top: 20px;">
+        Este cálculo es estimativo. Para un asesoramiento legal personalizado, contactanos en:
+      </p>
+      <p style="text-align: left; line-height: 1.5; font-size: 14px;">
+        Web: www.doradoabogados.com<br>
+        Email: contacto@doradoabogados.com<br>
+        Teléfono: 3875525222<br>
+        Dirección: Av. Belgrano N° 474, Piso 2. Salta capital
+      </p>
+    `;
+
+    html2pdf().from(element).save("estimacion_indemnizatoria.pdf");
+  }
+</script>
+
+
+
+<script>
+function calcularAntiguedadConFraccion(ingreso, egreso) {
+  let anios = egreso.getFullYear() - ingreso.getFullYear();
+  let meses = egreso.getMonth() - ingreso.getMonth();
+  let dias = egreso.getDate() - ingreso.getDate();
+
+  if (dias < 0) {
+    meses -= 1;
+    dias += new Date(egreso.getFullYear(), egreso.getMonth(), 0).getDate();
+  }
+  if (meses < 0) {
+    anios -= 1;
+    meses += 12;
+  }
+  if (meses >= 3 || (meses === 2 && dias >= 1)) {
+    anios += 1;
+  }
+  return anios;
+}
+
+function calcularIndemnizacion() {
+  const fechaIngreso = new Date(document.getElementById('fechaIngreso').value);
+  const fechaDespido = new Date(document.getElementById('fechaDespido').value + 'T00:00:00');
+  const sueldo = parseFloat(document.getElementById('sueldo').value);
+  if (!fechaIngreso || !fechaDespido || isNaN(sueldo)) {
+    alert('Completá todos los campos correctamente.');
+    return;
+  }
+  if (fechaDespido <= fechaIngreso) {
+    alert('La fecha de despido debe ser posterior a la de ingreso.');
+    return;
+  }
+
+  const redondear = valor => (valor % 1 >= 0.5) ? Math.ceil(valor) : Math.floor(valor);
+  const formatoMoneda = valor => `$ ${valor.toLocaleString('es-AR')}.-`;
+
+  const diasTotales = Math.floor((fechaDespido - fechaIngreso) / (1000 * 60 * 60 * 24));
+  const antigAnios = diasTotales / 365;
+
+  const diasDelMes = new Date(fechaDespido.getFullYear(), fechaDespido.getMonth() + 1, 0).getDate();
+  const diasTrabajados = fechaDespido.getDate();
+  const diasTrabajadosMes = redondear((sueldo / diasDelMes) * diasTrabajados);
+  const integracionMesDespido = diasTrabajadosMes >= sueldo ? 0 : redondear(sueldo - diasTrabajadosMes);
+
+  const inicioAnio = new Date(fechaDespido.getFullYear(), 0, 1);
+  const inicioTrabajoAnio = fechaIngreso > inicioAnio ? fechaIngreso : inicioAnio;
+  const diasTrabajadosAnio = Math.floor((fechaDespido - inicioTrabajoAnio) / (1000 * 60 * 60 * 24)) + 1;
+  const sacProporcional = redondear((sueldo / 365) * diasTrabajadosAnio);
+
+  let diasVacAnuales = 0;
+  if (antigAnios < 0.5) {
+    diasVacAnuales = diasTrabajadosAnio / 20;
+  } else if (antigAnios < 5) {
+    diasVacAnuales = 14;
+  } else if (antigAnios < 10) {
+    diasVacAnuales = 21;
+  } else if (antigAnios < 20) {
+    diasVacAnuales = 28;
+  } else {
+    diasVacAnuales = 35;
+  }
+
+  const sueldoVacacional = (sueldo / 25) * diasVacAnuales;
+  const vacacionesProporcionales = redondear((sueldoVacacional / 365) * diasTrabajadosAnio);
+  const sacVacacionesProporcionales = redondear(vacacionesProporcionales / 12);
+
+  let vacacionesNoGozadas = 0;
+  const fechaLimiteInicio = new Date(fechaDespido.getFullYear() - 1, 9, 1);
+  const fechaLimiteFin = new Date(fechaDespido.getFullYear(), 4, 31);
+  const ingresoAlMenosDosAniosAntes = fechaIngreso <= new Date(fechaDespido.getFullYear() - 2, 0, 1);
+
+  if (
+    ingresoAlMenosDosAniosAntes &&
+    fechaDespido >= fechaLimiteInicio &&
+    fechaDespido <= fechaLimiteFin
+  ) {
+    const anioAnterior = fechaDespido.getFullYear() - 1;
+    const inicioAnioAnterior = new Date(anioAnterior, 0, 1);
+    const finAnioAnterior = new Date(anioAnterior, 11, 31);
+    const inicioTrabajoAnioAnterior = fechaIngreso > inicioAnioAnterior ? fechaIngreso : inicioAnioAnterior;
+    const diasTrabajadosAnioAnterior = Math.floor((finAnioAnterior - inicioTrabajoAnioAnterior) / (1000 * 60 * 60 * 24)) + 1;
+
+    let diasVacAnioAnterior = 0;
+    if (antigAnios < 5) diasVacAnioAnterior = 14;
+    else if (antigAnios < 10) diasVacAnioAnterior = 21;
+    else if (antigAnios < 20) diasVacAnioAnterior = 28;
+    else diasVacAnioAnterior = 35;
+
+    const sueldoVacAnterior = (sueldo / 25) * diasVacAnioAnterior;
+    vacacionesNoGozadas = redondear((sueldoVacAnterior / 365) * diasTrabajadosAnioAnterior);
+  }
+
+  const sacVacaciones = redondear(vacacionesNoGozadas / 12);
+
+  const aplicaArt1 = document.getElementById('multaArt1').checked;
+  const aplicaArt2 = document.getElementById('multaArt2').checked;
+  const aplicaArt80 = document.getElementById('multaArt80').checked;
+  const aplicaEmbarazo = document.getElementById('multaEmbarazo').checked;
+
+  const antigCalc = calcularAntiguedadConFraccion(fechaIngreso, fechaDespido);
+  let art245 = redondear(antigCalc * sueldo);
+  if (art245 === 0) art245 = sueldo;
+
+  const preaviso = redondear(antigAnios < 5 ? sueldo : sueldo * 2);
+  const sacPreaviso = redondear(preaviso / 12);
+  const sacIntegracion = redondear(integracionMesDespido / 12);
+
+  const multa1 = aplicaArt1 ? redondear(art245) : 0;
+  const multa2 = aplicaArt2 ? redondear((art245 + integracionMesDespido + preaviso + sacIntegracion + sacPreaviso) * 0.5) : 0;
+  const multa80 = aplicaArt80 ? redondear(sueldo * 3) : 0;
+  const indemnizacionEmbarazo = aplicaEmbarazo ? redondear(sueldo * 13) : 0;
+
+  const totalFinal = redondear(
+    diasTrabajadosMes + sacProporcional +
+    vacacionesProporcionales + sacVacacionesProporcionales +
+    vacacionesNoGozadas + sacVacaciones +
+    preaviso + sacPreaviso +
+    integracionMesDespido + sacIntegracion +
+    art245 + multa1 + multa2 + multa80 + indemnizacionEmbarazo
+  );
+
+  let resultadoHTML = '';
+  resultadoHTML += `I.- Días trabajados en el mes: ${formatoMoneda(diasTrabajadosMes)}<br>`;
+  resultadoHTML += `II.- SAC proporcional: ${formatoMoneda(sacProporcional)}<br>`;
+  resultadoHTML += `III.- Vacaciones proporcional: ${formatoMoneda(vacacionesProporcionales)}<br>`;
+  resultadoHTML += `IV.- Vacaciones no gozadas: ${formatoMoneda(vacacionesNoGozadas)}<br>`;
+  resultadoHTML += `V.- SAC vacaciones proporcionales: ${formatoMoneda(sacVacacionesProporcionales)}<br>`;
+  resultadoHTML += `VI.- Indemnización por falta de preaviso: ${formatoMoneda(preaviso)}<br>`;
+  resultadoHTML += `VII.- SAC preaviso: ${formatoMoneda(sacPreaviso)}<br>`;
+  resultadoHTML += `VIII.- Indemnización integración mes despido: ${formatoMoneda(integracionMesDespido)}<br>`;
+  resultadoHTML += `IX.- SAC integración mes despido: ${formatoMoneda(sacIntegracion)}<br>`;
+  resultadoHTML += `X.- Indemnización por antigüedad: ${formatoMoneda(art245)}<br>`;
+  resultadoHTML += `XI.- Indemnización por falta de registración: ${formatoMoneda(multa1)}<br>`;
+  resultadoHTML += `XII.- Indemnización por falta de pago de indemnizaciones: ${formatoMoneda(multa2)}<br>`;
+  resultadoHTML += `XIII.- Indemnización por falta de entrega de certificados art. 80: ${formatoMoneda(multa80)}<br>`;
+  resultadoHTML += `XIV.- Indemnización por embarazo: ${formatoMoneda(indemnizacionEmbarazo)}<br>`;
+  resultadoHTML += `<br><strong>Total planilla: ${formatoMoneda(totalFinal)}</strong>`;
+
+  document.getElementById('resultado').innerHTML = resultadoHTML;
+}
+</script>
+
+</body>
+</html>
