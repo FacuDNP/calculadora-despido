@@ -221,7 +221,7 @@ function calcularIndemnizacion() {
 
   let vacacionesNoGozadas = 0;
   const fechaLimiteInicio = new Date(fechaDespido.getFullYear() - 1, 9, 1);
-  const fechaLimiteFin = new Date(fechaDespido.getFullYear(), 5, 31);
+  const fechaLimiteFin = new Date(fechaDespido.getFullYear(), 4, 31);
   const ingresoAlMenosDosAniosAntes = fechaIngreso <= new Date(fechaDespido.getFullYear() - 2, 0, 1);
 
   if (
