@@ -220,30 +220,38 @@ function calcularIndemnizacion() {
   const sacVacacionesProporcionales = redondear(vacacionesProporcionales / 12);
 
   let vacacionesNoGozadas = 0;
-  const fechaLimiteInicio = new Date(fechaDespido.getFullYear() - 1, 9, 1);
-  const fechaLimiteFin = new Date(fechaDespido.getFullYear(), 4, 31);
-  const ingresoAlMenosDosAniosAntes = fechaIngreso <= new Date(fechaDespido.getFullYear() - 2, 0, 1);
 
-  if (
-    ingresoAlMenosDosAniosAntes &&
-    fechaDespido >= fechaLimiteInicio &&
-    fechaDespido <= fechaLimiteFin
-  ) {
-    const anioAnterior = fechaDespido.getFullYear() - 1;
-    const inicioAnioAnterior = new Date(anioAnterior, 0, 1);
-    const finAnioAnterior = new Date(anioAnterior, 11, 31);
-    const inicioTrabajoAnioAnterior = fechaIngreso > inicioAnioAnterior ? fechaIngreso : inicioAnioAnterior;
-    const diasTrabajadosAnioAnterior = Math.floor((finAnioAnterior - inicioTrabajoAnioAnterior) / (1000 * 60 * 60 * 24)) + 1;
+// Corte: 31 de mayo (mes 4 = mayo)
+const fechaCorteVacNoGoz = new Date(fechaDespido.getFullYear(), 4, 31);
 
-    let diasVacAnioAnterior = 0;
-    if (antigAnios < 5) diasVacAnioAnterior = 14;
-    else if (antigAnios < 10) diasVacAnioAnterior = 21;
-    else if (antigAnios < 20) diasVacAnioAnterior = 28;
-    else diasVacAnioAnterior = 35;
+// Año del despido y año anterior
+const anioDespido = fechaDespido.getFullYear();
+const anioAnterior = anioDespido - 1;
 
-    const sueldoVacAnterior = (sueldo / 25) * diasVacAnioAnterior;
-    vacacionesNoGozadas = redondear((sueldoVacAnterior / 365) * diasTrabajadosAnioAnterior);
-  }
+// ¿Trabajó en el año anterior? (con ingresar hasta el 31/12 del año anterior alcanza)
+const trabajoEnAnioAnterior = fechaIngreso <= new Date(anioAnterior, 11, 31);
+
+// Si el despido es hasta el 31/05 (inclusive) y trabajó en el año anterior,
+// corresponde pagar vacaciones no gozadas del año anterior.
+if (fechaDespido <= fechaCorteVacNoGoz && trabajoEnAnioAnterior) {
+  const inicioAnioAnterior = new Date(anioAnterior, 0, 1);
+  const finAnioAnterior = new Date(anioAnterior, 11, 31);
+
+  // Días efectivamente trabajados en el año anterior
+  const inicioTrabajoAnioAnterior = fechaIngreso > inicioAnioAnterior ? fechaIngreso : inicioAnioAnterior;
+  const diasTrabajadosAnioAnterior = Math.floor((finAnioAnterior - inicioTrabajoAnioAnterior) / (1000 * 60 * 60 * 24)) + 1;
+
+  // Días de vacaciones según antigüedad
+  let diasVacAnioAnterior = 0;
+  if (antigAnios < 5) diasVacAnioAnterior = 14;
+  else if (antigAnios < 10) diasVacAnioAnterior = 21;
+  else if (antigAnios < 20) diasVacAnioAnterior = 28;
+  else diasVacAnioAnterior = 35;
+
+  // Valor de vacaciones no gozadas
+  const sueldoVacAnterior = (sueldo / 25) * diasVacAnioAnterior;
+  vacacionesNoGozadas = redondear((sueldoVacAnterior / 365) * diasTrabajadosAnioAnterior);
+}
 
   const sacVacaciones = redondear(vacacionesNoGozadas / 12);
 
